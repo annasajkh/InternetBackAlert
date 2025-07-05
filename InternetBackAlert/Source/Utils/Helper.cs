@@ -22,7 +22,7 @@ internal static class Helper
                     "google.com",
             };
 
-            PingReply reply = ping.Send(url, timeout: 1000, buffer: new byte[32], new PingOptions());
+            PingReply reply = ping.Send(url, timeout: 1000);
 
             return reply.Status == IPStatus.Success;
         }
