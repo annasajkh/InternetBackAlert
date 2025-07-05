@@ -9,4 +9,4 @@ internal partial class SourceGenerationContext : JsonSerializerContext
 
 }
 
-internal readonly record struct SettingsData(string AlertAudioPath, float AlertVolume, bool IsAlertEnabled);
+internal readonly record struct SettingsData(string AlertAudioPath, float AlertVolume, bool IsAlertAudioEnabled, bool IsAlertPopupEnabled);

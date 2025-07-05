@@ -1,12 +1,13 @@
-﻿using Avalonia.Controls.Primitives;
+﻿using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
+using Avalonia.Layout;
+using Avalonia.Media;
 using Avalonia.Threading;
 using InternetBackAlert.Source.Audio;
 using InternetBackAlert.Source.Data;
 using InternetBackAlert.Source.UIs.Containers;
 using InternetBackAlert.Source.Utils;
-using MsBox.Avalonia;
-using MsBox.Avalonia.Base;
-using MsBox.Avalonia.Enums;
+using System.Runtime.InteropServices;
 using System.Timers;
 using Timer = System.Timers.Timer;
 
@@ -117,7 +118,8 @@ internal class MainSystem : IDisposable
                     {
                         AlertAudioPath = mainContainer.AlertTextBox.Text,
                         AlertVolume = (float)mainContainer.VolumeSlider.Value,
-                        IsAlertEnabled = mainContainer.IsAlertEnabled
+                        IsAlertAudioEnabled = mainContainer.IsAlertAudioEnabled,
+                        IsAlertPopupEnabled = mainContainer.IsAlertPopupEnabled
                     };
 
                     if (currentSettingsData != oldSettingsData)
@@ -178,62 +180,139 @@ internal class MainSystem : IDisposable
                 {
                     if (connectionHistories.Count == 2 && connectionHistories[0] == ConnectionHistory.Disconnected && connectionHistories[1] == ConnectionHistory.Connected)
                     {
-                        if (mainContainer.IsAlertEnabled)
+
+                        Dispatcher.UIThread.InvokeAsync(async () =>
                         {
-                            Dispatcher.UIThread.InvokeAsync(() =>
+                            if (mainContainer.AlertTextBox is not null && mainContainer.AlertTextBox.Text == "")
                             {
-                                if (mainContainer.AlertTextBox is not null && mainContainer.AlertTextBox.Text == "")
-                                {
-                                    return;
-                                }
-                            });
+                                return;
+                            }
 
                             try
                             {
-                                Dispatcher.UIThread.InvokeAsync(() =>
+                                if (mainContainer is not null)
                                 {
-                                    if (mainContainer is not null && mainContainer.VolumeSlider is not null && mainContainer.AlertTextBox is not null && mainContainer.AlertTextBox.Text is not null)
+                                    if (mainContainer.IsAlertAudioEnabled)
                                     {
-                                        Music music = Music.Load(mainContainer.AlertTextBox.Text, AudioType.Mp3, volume: (int)(mainContainer.VolumeSlider.Value * 100));
-
-                                        if (music is not null && Global.MusicPlayer is not null)
+                                        if (mainContainer.VolumeSlider is not null && mainContainer.AlertTextBox is not null && mainContainer.AlertTextBox.Text is not null)
                                         {
-                                            Global.MusicPlayer.SetSource(music);
-                                            Global.MusicPlayer.OnFinished += () =>
+                                            if (!File.Exists(mainContainer.AlertTextBox.Text))
                                             {
-                                                music.Dispose();
-                                                audioSources.Remove(music);
-                                            };
+                                                throw new FileNotFoundException();
+                                            }
 
-                                            audioSources.Add(music);
+                                            Music music = Music.Load(mainContainer.AlertTextBox.Text, AudioType.Mp3, volume: (int)(mainContainer.VolumeSlider.Value * 100));
 
-                                            Global.MusicPlayer.Play();
+                                            if (music is not null && Global.MusicPlayer is not null)
+                                            {
+                                                Global.MusicPlayer.SetSource(music);
+                                                Global.MusicPlayer.OnFinished += () =>
+                                                {
+                                                    music.Dispose();
+                                                    audioSources.Remove(music);
+                                                };
+
+                                                audioSources.Add(music);
+
+                                                Global.MusicPlayer.Play();
+                                            }
                                         }
                                     }
 
-                                    if (Global.lifetime is not null && Global.lifetime.MainWindow is not null)
+                                    if (mainContainer.IsAlertPopupEnabled)
                                     {
-                                        Global.lifetime.MainWindow.Activate();
+                                        if (Global.lifetime is not null && Global.lifetime.MainWindow is not null)
+                                        {
+                                            Window window = new()
+                                            {
+                                                Title = "Internet Back Alert",
+                                                Width = 960 / 4,
+                                                Height = 540 / 4,
+                                                Content = new TextBlock { FontSize = 16, Text = "The internet is back!!!", HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center },
+                                                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                                                SizeToContent = SizeToContent.WidthAndHeight,
+                                                CanResize = false,
+                                                Topmost = true
+                                            };
+
+                                            if (OperatingSystem.IsLinux())
+                                            {
+                                                Global.lifetime.MainWindow.WindowState = WindowState.Normal;
+                                                Global.lifetime.MainWindow.Activate();
+                                                Global.lifetime.MainWindow.Focus();
+                                                
+                                                window.WindowState = WindowState.Normal;
+                                                window.Activate();
+                                                window.Focus();
+                                            }
+
+                                            await window.ShowDialog(Global.lifetime.MainWindow);
+                                        }
                                     }
-                                });
+                                }
                             }
                             catch (FileNotFoundException)
                             {
-                                Dispatcher.UIThread.InvokeAsync(async () =>
+                                if (Global.lifetime is not null && Global.lifetime.MainWindow is not null)
                                 {
-                                    IMsBox<ButtonResult> box = MessageBoxManager.GetMessageBoxStandard("Error", "File Not found", ButtonEnum.Ok, Icon.Error);
-                                    await box.ShowAsync();
-                                });
+                                    Window window = new()
+                                    {
+                                        Title = "Internet Back Alert",
+                                        Width = 960 / 4,
+                                        Height = 540 / 4,
+                                        Content = new TextBlock { FontSize = 16, Text = "File Not found", HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center },
+                                        WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                                        SizeToContent = SizeToContent.WidthAndHeight,
+                                        CanResize = false,
+                                        Topmost = true
+                                    };
+                                    
+                                    if (OperatingSystem.IsLinux())
+                                    {
+                                        Global.lifetime.MainWindow.WindowState = WindowState.Normal;
+                                        Global.lifetime.MainWindow.Activate();
+                                        Global.lifetime.MainWindow.Focus();
+                                        
+                                        window.WindowState = WindowState.Normal;
+                                        window.Activate();
+                                        window.Focus();
+                                    }
+
+                                    await window.ShowDialog(Global.lifetime.MainWindow);
+                                }
                             }
                             catch (Exception exception)
                             {
-                                Dispatcher.UIThread.InvokeAsync(async () =>
+                                if (Global.lifetime is not null && Global.lifetime.MainWindow is not null)
                                 {
-                                    IMsBox<ButtonResult> box = MessageBoxManager.GetMessageBoxStandard("Error", exception.ToString(), ButtonEnum.Ok, Icon.Error);
-                                    await box.ShowAsync();
-                                });
+                                    Window window = new()
+                                    {
+                                        Title = "Internet Back Alert",
+                                        Width = 960 / 2,
+                                        Height = 540 / 2,
+                                        Content = new TextBlock { FontSize = 16, Text = exception.ToString(), HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, TextWrapping = TextWrapping.Wrap },
+                                        WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                                        SizeToContent = SizeToContent.WidthAndHeight,
+                                        CanResize = false,
+                                        Topmost = true
+                                    };
+
+                                    if (OperatingSystem.IsLinux())
+                                    {
+                                        Global.lifetime.MainWindow.WindowState = WindowState.Normal;
+                                        Global.lifetime.MainWindow.Activate();
+                                        Global.lifetime.MainWindow.Focus();
+                                        
+                                        window.WindowState = WindowState.Normal;
+                                        window.Activate();
+                                        window.Focus();
+                                    }
+
+                                    await window.ShowDialog(Global.lifetime.MainWindow);
+                                }
                             }
-                        }
+
+                        });
 
                         isConfirmedDisconnected = false;
                     }

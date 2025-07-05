@@ -6,6 +6,7 @@ namespace InternetBackAlert.Source.Utils;
 
 internal static class Helper
 {
+
     internal static bool IsConnectedToTheInternet()
     {
         try

@@ -12,7 +12,8 @@ namespace InternetBackAlert.Source.UIs.Containers;
 
 internal class MainContainer : ComponentBase
 {
-    internal bool IsAlertEnabled { get; private set; }
+    internal bool IsAlertAudioEnabled { get; private set; }
+    internal bool IsAlertPopupEnabled { get; private set; }
     internal TextBlock? IsConnectedToTheInternetTextBlock { get; private set; }
     internal Slider? VolumeSlider { get; private set; }
     internal bool isLoadingSettings { get; private set; } = true;
@@ -46,13 +47,24 @@ internal class MainContainer : ComponentBase
     }
 
 
-    void AudioAlertToggleOnIsCheckedChanged(RoutedEventArgs routedEventArgs)
+    void AlertAudioToggleOnIsCheckedChanged(RoutedEventArgs routedEventArgs)
     {
         ToggleSwitch? toggleSwitch = (ToggleSwitch?)routedEventArgs.Source;
 
         if (toggleSwitch is ToggleSwitch toggleSwitchTemp && toggleSwitchTemp.IsChecked is bool toggleSwitchTempChecked)
         {
-            IsAlertEnabled = toggleSwitchTempChecked;
+            IsAlertAudioEnabled = toggleSwitchTempChecked;
+        }
+    }
+
+
+    void AlertPopupToggleOnIsCheckedChanged(RoutedEventArgs routedEventArgs)
+    {
+        ToggleSwitch? toggleSwitch = (ToggleSwitch?)routedEventArgs.Source;
+
+        if (toggleSwitch is ToggleSwitch toggleSwitchTemp && toggleSwitchTemp.IsChecked is bool toggleSwitchTempChecked)
+        {
+            IsAlertPopupEnabled = toggleSwitchTempChecked;
         }
     }
 
@@ -168,12 +180,36 @@ internal class MainContainer : ComponentBase
                                     .FontSize(14)
                                     .Foreground(Brushes.White)
                                     .VerticalAlignment(VerticalAlignment.Center)
-                                    .Text("Enable alert"),
+                                    .Text("Enable alert audio"),
 
                                     new ToggleSwitch()
                                     .VerticalAlignment(VerticalAlignment.Center)
-                                    .OnIsCheckedChanged(AudioAlertToggleOnIsCheckedChanged)
-                                    .Ref(out ToggleSwitch toggleSwitchTemp)
+                                    .OnIsCheckedChanged(AlertAudioToggleOnIsCheckedChanged)
+                                    .Ref(out ToggleSwitch alertAudioToggleSwitchTemp)
+                                    .Row(0)
+                                    .Col(1)
+                                ),
+
+                                new Grid()
+                                {
+                                    ColumnSpacing = 4
+                                }
+                                .Rows("32")
+                                .Cols("*, Auto")
+                                .Children(
+                                    new TextBlock()
+                                    .Row(0)
+                                    .Col(0)
+                                    .TextWrapping(TextWrapping.Wrap)
+                                    .FontSize(14)
+                                    .Foreground(Brushes.White)
+                                    .VerticalAlignment(VerticalAlignment.Center)
+                                    .Text("Enable alert popup"),
+
+                                    new ToggleSwitch()
+                                    .VerticalAlignment(VerticalAlignment.Center)
+                                    .OnIsCheckedChanged(AlertPopupToggleOnIsCheckedChanged)
+                                    .Ref(out ToggleSwitch alertPopupToggleSwitchTemp)
                                     .Row(0)
                                     .Col(1)
                                 )
@@ -196,8 +232,11 @@ internal class MainContainer : ComponentBase
 
                 volumeSliderTemp.Value = settingsData.Value.AlertVolume;
 
-                toggleSwitchTemp.IsChecked = settingsData.Value.IsAlertEnabled;
-                IsAlertEnabled = settingsData.Value.IsAlertEnabled;
+                alertAudioToggleSwitchTemp.IsChecked = settingsData.Value.IsAlertAudioEnabled;
+                IsAlertAudioEnabled = settingsData.Value.IsAlertAudioEnabled;
+
+                alertPopupToggleSwitchTemp.IsChecked = settingsData.Value.IsAlertPopupEnabled;
+                IsAlertPopupEnabled = settingsData.Value.IsAlertPopupEnabled;
             }
 
 

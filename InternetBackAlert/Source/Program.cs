@@ -8,7 +8,6 @@ using Projektanker.Icons.Avalonia;
 using Projektanker.Icons.Avalonia.FontAwesome;
 using Semi.Avalonia;
 
-
 namespace InternetBackAlert.Source;
 
 static internal class Program
@@ -25,6 +24,7 @@ static internal class Program
         {
             SDL_mixer.Mix_OpenAudio(frequency: 44100, format: SDL.AUDIO_S16SYS, channels: 2, chunksize: 2048);
         }
+
 
         Global.lifetime = new()
         {
@@ -60,7 +60,6 @@ static internal class Program
         MainSystem mainSystem = new(mainContainer);
 
         Global.lifetime.Start();
-
 
         mainSystem.Dispose();
     }
