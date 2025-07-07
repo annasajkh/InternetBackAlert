@@ -4,6 +4,7 @@ using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Threading;
 using InternetBackAlert.Source.Audio;
+using InternetBackAlert.Source.Bindings.SDL2;
 using InternetBackAlert.Source.Data;
 using InternetBackAlert.Source.UIs.Containers;
 using InternetBackAlert.Source.Utils;
@@ -223,30 +224,28 @@ internal class MainSystem : IDisposable
                                     {
                                         if (Global.lifetime is not null && Global.lifetime.MainWindow is not null)
                                         {
-                                            Window window = new()
+                                            if (OperatingSystem.IsWindows())
                                             {
-                                                Title = "Internet Back Alert",
-                                                Width = 960 / 4,
-                                                Height = 540 / 4,
-                                                Content = new TextBlock { FontSize = 16, Text = "The internet is back!!!", HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center },
-                                                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                                                SizeToContent = SizeToContent.WidthAndHeight,
-                                                CanResize = false,
-                                                Topmost = true
-                                            };
+                                                Window window = new()
+                                                {
+                                                    Title = "Internet Back Alert",
+                                                    Width = 960 / 4,
+                                                    Height = 540 / 4,
+                                                    Content = new TextBlock { FontSize = 16, Text = "The internet is back!!!", HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center },
+                                                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                                                    SizeToContent = SizeToContent.WidthAndHeight,
+                                                    CanResize = false,
+                                                    Topmost = true,
+                                                    ShowActivated = true,
+                                                    Focusable = true,
+                                                };
 
-                                            if (OperatingSystem.IsLinux())
-                                            {
-                                                Global.lifetime.MainWindow.WindowState = WindowState.Normal;
-                                                Global.lifetime.MainWindow.Activate();
-                                                Global.lifetime.MainWindow.Focus();
-                                                
-                                                window.WindowState = WindowState.Normal;
-                                                window.Activate();
-                                                window.Focus();
+                                                await window.ShowDialog(Global.lifetime.MainWindow);
                                             }
-
-                                            await window.ShowDialog(Global.lifetime.MainWindow);
+                                            else if (OperatingSystem.IsLinux())
+                                            {
+                                                SDL.SDL_ShowSimpleMessageBox(SDL.SDL_MessageBoxFlags.SDL_MESSAGEBOX_INFORMATION, "Internet Back Alert", "The internet is back!!!", nint.Zero);
+                                            }
                                         }
                                     }
                                 }
@@ -255,60 +254,56 @@ internal class MainSystem : IDisposable
                             {
                                 if (Global.lifetime is not null && Global.lifetime.MainWindow is not null)
                                 {
-                                    Window window = new()
+                                    if (OperatingSystem.IsWindows())
                                     {
-                                        Title = "Internet Back Alert",
-                                        Width = 960 / 4,
-                                        Height = 540 / 4,
-                                        Content = new TextBlock { FontSize = 16, Text = "File Not found", HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center },
-                                        WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                                        SizeToContent = SizeToContent.WidthAndHeight,
-                                        CanResize = false,
-                                        Topmost = true
-                                    };
-                                    
-                                    if (OperatingSystem.IsLinux())
-                                    {
-                                        Global.lifetime.MainWindow.WindowState = WindowState.Normal;
-                                        Global.lifetime.MainWindow.Activate();
-                                        Global.lifetime.MainWindow.Focus();
-                                        
-                                        window.WindowState = WindowState.Normal;
-                                        window.Activate();
-                                        window.Focus();
-                                    }
+                                        Window window = new()
+                                        {
+                                            Title = "Internet Back Alert",
+                                            Width = 960 / 4,
+                                            Height = 540 / 4,
+                                            Content = new TextBlock { FontSize = 16, Text = "File Not found", HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center },
+                                            WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                                            SizeToContent = SizeToContent.WidthAndHeight,
+                                            CanResize = false,
+                                            Topmost = true,
+                                            ShowActivated = true,
+                                            Focusable = true,
+                                        };
 
-                                    await window.ShowDialog(Global.lifetime.MainWindow);
+                                        await window.ShowDialog(Global.lifetime.MainWindow);   
+                                    }
+                                    else if (OperatingSystem.IsLinux())
+                                    {
+                                        SDL.SDL_ShowSimpleMessageBox(SDL.SDL_MessageBoxFlags.SDL_MESSAGEBOX_ERROR, "Internet Back Alert", "File Not found", nint.Zero);
+                                    }
                                 }
                             }
                             catch (Exception exception)
                             {
                                 if (Global.lifetime is not null && Global.lifetime.MainWindow is not null)
                                 {
-                                    Window window = new()
+                                    if (OperatingSystem.IsWindows())
                                     {
-                                        Title = "Internet Back Alert",
-                                        Width = 960 / 2,
-                                        Height = 540 / 2,
-                                        Content = new TextBlock { FontSize = 16, Text = exception.ToString(), HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, TextWrapping = TextWrapping.Wrap },
-                                        WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                                        SizeToContent = SizeToContent.WidthAndHeight,
-                                        CanResize = false,
-                                        Topmost = true
-                                    };
+                                        Window window = new()
+                                        {
+                                            Title = "Internet Back Alert",
+                                            Width = 960 / 2,
+                                            Height = 540 / 2,
+                                            Content = new TextBlock { FontSize = 16, Text = exception.ToString(), HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, TextWrapping = TextWrapping.Wrap },
+                                            WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                                            SizeToContent = SizeToContent.WidthAndHeight,
+                                            CanResize = false,
+                                            Topmost = true,
+                                            ShowActivated = true,
+                                            Focusable = true,
+                                        };
 
-                                    if (OperatingSystem.IsLinux())
-                                    {
-                                        Global.lifetime.MainWindow.WindowState = WindowState.Normal;
-                                        Global.lifetime.MainWindow.Activate();
-                                        Global.lifetime.MainWindow.Focus();
-                                        
-                                        window.WindowState = WindowState.Normal;
-                                        window.Activate();
-                                        window.Focus();
+                                        await window.ShowDialog(Global.lifetime.MainWindow);
                                     }
-
-                                    await window.ShowDialog(Global.lifetime.MainWindow);
+                                    else if (OperatingSystem.IsLinux())
+                                    {
+                                        SDL.SDL_ShowSimpleMessageBox(SDL.SDL_MessageBoxFlags.SDL_MESSAGEBOX_ERROR, "Internet Back Alert", exception.ToString(), nint.Zero);
+                                    }
                                 }
                             }
 

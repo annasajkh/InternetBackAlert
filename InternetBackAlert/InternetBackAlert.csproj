@@ -12,6 +12,21 @@
     <PublishAot>true</PublishAot>
   </PropertyGroup>
 
+	<!-- Unfortunately, command-line args -p:DebugType=None -p:DebugSymbols=false started working only for the main project,
+		PDBs from other projects are still included. Looks like this is the most reliable way to remove PDBs.
+		Source https://github.com/dotnet/sdk/issues/16975#issuecomment-1689291544 -->
+	<Target Name="DeleteFiles" AfterTargets="Publish">
+		<ItemGroup>
+			<FilesToDelete Include="$(PublishDir)*.pdb;"/>
+		</ItemGroup>
+		<Delete Files="@(FilesToDelete)">
+			<Output
+				TaskParameter="DeletedFiles"
+				ItemName="FilesDeleted"/>
+		</Delete>
+		<Message Text="Deleted PDB files: @(FilesDeleted)" Importance="high" />
+	</Target>
+
   <ItemGroup>
 	  <PackageReference Include="Avalonia.Desktop" Version="11.3.2" />
 	  <PackageReference Include="Avalonia.Diagnostics" Version="11.3.2" />

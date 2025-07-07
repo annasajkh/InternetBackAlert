@@ -17,7 +17,6 @@ static internal class Program
         if (SDL.SDL_Init(SDL.SDL_INIT_AUDIO) < 0)
         {
             string errorMessage = SDL.SDL_GetError();
-
             Console.WriteLine($"Cannot initialize SDL Audio: {errorMessage}");
         }
         else
