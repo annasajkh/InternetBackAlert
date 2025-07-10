@@ -1,5 +1,6 @@
 # InternetBackAlert
 Alert when the internet is back
+<img width="948" height="531" alt="image" src="https://github.com/user-attachments/assets/6e0ffc6f-d55e-438b-a82d-165ef74dc622" />
 
 ### How to use
 
