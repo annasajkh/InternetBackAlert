@@ -28,7 +28,7 @@ internal class MainSystem : IDisposable
 
     Timer checkConnectionTimer = new(interval: 500);
     Timer DisconnectCheckingTimer = new(interval: 5000);
-    Timer autoSaveTimer = new(interval: 500);
+    Timer autoSaveTimer = new(interval: 100);
 
     bool isDisposed;
     volatile bool isConnected = Helper.IsConnectedToTheInternet();
@@ -125,9 +125,16 @@ internal class MainSystem : IDisposable
 
                     if (currentSettingsData != oldSettingsData)
                     {
-                        Settings.Save(currentSettingsData);
+                        if (!mainContainer.IsSettingsExistAndLoaded)
+                        {
+#if DEBUG
+                            Console.WriteLine("Saving...");
+#endif
+                            Settings.Save(currentSettingsData);
+                        }
 
                         oldSettingsData = currentSettingsData;
+                        mainContainer.IsSettingsExistAndLoaded = false;
                     }
                 }
             });

@@ -17,6 +17,7 @@ internal class MainContainer : ComponentBase
     internal TextBlock? IsConnectedToTheInternetTextBlock { get; private set; }
     internal Slider? VolumeSlider { get; private set; }
     internal bool isLoadingSettings { get; private set; } = true;
+    internal bool IsSettingsExistAndLoaded { get; set; }
     internal TextBox? AlertTextBox { get; private set; }
 
     async void AudioAlertBrowserButtonPressedAsync(RoutedEventArgs routedEventArgs)
@@ -116,6 +117,7 @@ internal class MainContainer : ComponentBase
                                     .Col(0),
 
                                     new TextBox()
+                                    .Text("")
                                     .Ref(out TextBox alertTextBoxTemp)
                                     .VerticalAlignment(VerticalAlignment.Center)
                                     .Row(0)
@@ -183,6 +185,7 @@ internal class MainContainer : ComponentBase
                                     .Text("Enable alert audio"),
 
                                     new ToggleSwitch()
+                                    .IsChecked(true)
                                     .VerticalAlignment(VerticalAlignment.Center)
                                     .OnIsCheckedChanged(AlertAudioToggleOnIsCheckedChanged)
                                     .Ref(out ToggleSwitch alertAudioToggleSwitchTemp)
@@ -207,6 +210,7 @@ internal class MainContainer : ComponentBase
                                     .Text("Enable alert popup"),
 
                                     new ToggleSwitch()
+                                    .IsChecked(true)
                                     .VerticalAlignment(VerticalAlignment.Center)
                                     .OnIsCheckedChanged(AlertPopupToggleOnIsCheckedChanged)
                                     .Ref(out ToggleSwitch alertPopupToggleSwitchTemp)
@@ -237,6 +241,8 @@ internal class MainContainer : ComponentBase
 
                 alertPopupToggleSwitchTemp.IsChecked = settingsData.Value.IsAlertPopupEnabled;
                 IsAlertPopupEnabled = settingsData.Value.IsAlertPopupEnabled;
+
+                IsSettingsExistAndLoaded = true;
             }
 
 
