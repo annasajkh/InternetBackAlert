@@ -12,8 +12,8 @@ namespace InternetBackAlert.Source.UIs.Containers;
 
 internal class MainContainer : ComponentBase
 {
-    internal bool IsAlertAudioEnabled { get; private set; }
-    internal bool IsAlertPopupEnabled { get; private set; }
+    internal bool IsAlertAudioEnabled { get; private set; } = true;
+    internal bool IsAlertPopupEnabled { get; private set; } = true;
     internal TextBlock? IsConnectedToTheInternetTextBlock { get; private set; }
     internal Slider? VolumeSlider { get; private set; }
     internal bool isLoadingSettings { get; private set; } = true;
