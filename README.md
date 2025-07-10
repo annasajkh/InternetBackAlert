@@ -6,7 +6,7 @@ Alert when the internet is back
 
 The program will trigger when it determined that you are disconnected from the internet and then you got reconnected
 
-You can find the binaries on the release page https://github.com/annasajkh/InternetBackAlert/releases/lastest
+You can find the binaries on the release page https://github.com/annasajkh/InternetBackAlert/releases<br>
 after installing it you can configure the options 
 - `Alert audio path` The path to the audio file the program will play (the recommended audio format is mp3 but SDL_Mixer can also load flac, ogg, voc, and wav)
 - `Volume` The audio volume
